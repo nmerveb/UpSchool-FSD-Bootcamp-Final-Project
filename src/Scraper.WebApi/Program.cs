@@ -1,4 +1,5 @@
 using Scraper.Infrastructure;
+using Scraper.Application;
 
 try
 {
@@ -12,6 +13,7 @@ try
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
 
+    builder.Services.AddApplicationServices();
     builder.Services.AddInfrastructure(builder.Configuration, builder.Environment.WebRootPath);
 
     var app = builder.Build();

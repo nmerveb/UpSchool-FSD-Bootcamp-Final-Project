@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Scraper.Domain.Entities;
-using Scraper.Domain.Enums;
 
 namespace Scraper.Infrastructure.Persistence.Configurations.Application
 {

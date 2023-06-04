@@ -17,10 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Scraper.Application\Scraper.Application.csproj" />
     <ProjectReference Include="..\Scraper.Infrastructure\Scraper.Infrastructure.csproj" />
   </ItemGroup>

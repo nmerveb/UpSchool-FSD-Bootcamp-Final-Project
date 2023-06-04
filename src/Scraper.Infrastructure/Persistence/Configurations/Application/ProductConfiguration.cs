@@ -26,7 +26,7 @@ namespace Scraper.Infrastructure.Persistence.Configurations.Application
             builder.Property(x => x.Price).IsRequired();
 
             //Sale Price
-            builder.Property(x => x.Picture);
+            builder.Property(x => x.SalePrice).IsRequired(false);
 
 
             //Create table

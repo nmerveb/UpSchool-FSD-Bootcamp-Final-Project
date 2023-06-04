@@ -8,10 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Scraper.Domain\Scraper.Domain.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Features\" />
+    <ProjectReference Include="..\Scrapper.Console\Scraper.Console.csproj" />
   </ItemGroup>
 
   <ItemGroup>
