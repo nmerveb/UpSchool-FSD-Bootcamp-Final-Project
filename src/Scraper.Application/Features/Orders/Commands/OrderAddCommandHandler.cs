@@ -1,8 +1,8 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.SignalR.Client;
 using Scraper.Application.Common.Interfaces;
 using Scraper.Application.Common.Models;
 using Scraper.Domain.Common;
-using Scraper.Console;
 using Scraper.Domain.Entities;
 using Scraper.Domain.Enums;
 
@@ -11,7 +11,8 @@ namespace Scraper.Application.Features.Orders.Commands
     public class OrderAddCommandHandler :  IRequestHandler<OrderAddCommand, Response<Guid>>
     {
         private readonly IApplicationDbContext _applicationDbContext;
-
+        private const string connectionUrl = "https://localhost:7287/Hubs/OrderListHub";
+        
         private OrderResponseDto _responseDto;
         public OrderAddCommandHandler(IApplicationDbContext applicationDbContext)
         {
@@ -21,12 +22,20 @@ namespace Scraper.Application.Features.Orders.Commands
 
         public async Task<Response<Guid>> Handle(OrderAddCommand request, CancellationToken cancellationToken)
         {
+
+            var hubConnection = new HubConnectionBuilder()
+                .WithUrl(connectionUrl)
+                .WithAutomaticReconnect()
+                .Build();
+            
+            await hubConnection.StartAsync();
+
             var scraperConsole = new ScraperConsole();
 
             Guid orderId = Guid.NewGuid();
             Order addOrder =  new Order();
             
-            var response = scraperConsole.ScrapProducts(orderId);
+            var response = await  scraperConsole.ScrapProducts(orderId);
             
             var onDiscount = response.Products.Where(x => x.IsOnSale ==  true).ToList();
             var nonDiscount = response.Products.Where(x => x.IsOnSale == false).ToList();
@@ -82,7 +91,9 @@ namespace Scraper.Application.Features.Orders.Commands
             await _applicationDbContext.Orders.AddAsync(addOrder, cancellationToken);
             await _applicationDbContext.SaveChangesAsync(cancellationToken);
 
-            return new Response<Guid>($"The new city named \"{addOrder.Id}\" was succesfully added.", addOrder.Id);
+            await hubConnection.InvokeAsync("AddOrderAsync", addOrder.Id.ToString());
+
+            return new Response<Guid>($"The new order \"{addOrder.Id}\" was succesfully added.", addOrder.Id);
         }
 
         

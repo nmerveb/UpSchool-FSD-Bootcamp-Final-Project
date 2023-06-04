@@ -1,16 +1,27 @@
 ﻿using HtmlAgilityPack;
+using Microsoft.AspNetCore.SignalR.Client;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using Scraper.Console;
-using System.Security.AccessControl;
+using System.Net.Http.Json;
 
 public class ScraperConsole
 {
     IWebDriver driver = new ChromeDriver();
-
-
-    public ResponseDto ScrapProducts(Guid orderId)
+    const string connectionUrl = "https://localhost:7287/Hubs/ScraperLogHub";
+    public async Task<ResponseDto> ScrapProducts(Guid orderId)
     {
+        var hubConnection = new HubConnectionBuilder()
+            .WithUrl(connectionUrl)
+            .WithAutomaticReconnect()
+            .Build();
+
+        await hubConnection.StartAsync();
+
+        var httpClient = new HttpClient();
+
+        await httpClient.PostAsJsonAsync(connectionUrl, CreateLog("---- Bot started.-----", hubConnection.ConnectionId));
+
         var totalProductAmount = 0;
         
         List<ProductDto> productList = new List<ProductDto>();
@@ -26,11 +37,13 @@ public class ScraperConsole
         Console.WriteLine("Logged into the web page.");
         Console.WriteLine("------------------------");
         Console.ResetColor();
+        await httpClient.PostAsJsonAsync(connectionUrl, CreateLog("---- Logged into the web page.-----", hubConnection.ConnectionId));
 
         var activePage = int.Parse(driver.FindElement(By.CssSelector(".page-link.active.page-number")).Text);
         var totalPageCount = driver.FindElements(By.CssSelector(".page-link.page-number")).Count() + 1;
 
         orderEventList.Add(new OrderEventDto(orderId, OrderStatus.ScrapingStarted, DateTimeOffset.Now));
+        await httpClient.PostAsJsonAsync(connectionUrl, CreateLog("---- Scraping started.-----", hubConnection.ConnectionId));
 
         try
         {
@@ -76,14 +89,18 @@ public class ScraperConsole
                 }
 
                 Console.WriteLine($"Page {activePage} scraped.Total product count:{totalProductAmount}. -- {DateTime.Now}");
+                await httpClient.PostAsJsonAsync(connectionUrl, CreateLog($"Page {activePage} scraped.Total product count:{totalProductAmount}.", hubConnection.ConnectionId));
+
                 activePage++;
             }
 
             orderEventList.Add(new OrderEventDto(orderId, OrderStatus.ScrapingCompleted, DateTimeOffset.Now));
+            await httpClient.PostAsJsonAsync(connectionUrl, CreateLog("---- Scraping completed.-----", hubConnection.ConnectionId));
         }
         catch
         {
             orderEventList.Add(new OrderEventDto(orderId, OrderStatus.ScrapingFailed, DateTimeOffset.Now));
+            await httpClient.PostAsJsonAsync(connectionUrl, CreateLog("---- Scraping failed.-----", hubConnection.ConnectionId));
         }
 
 
@@ -95,6 +112,7 @@ public class ScraperConsole
 
         driver.Close();
         orderEventList.Add(new OrderEventDto(orderId, OrderStatus.OrderCompleted, DateTimeOffset.Now));
+        await httpClient.PostAsJsonAsync(connectionUrl, CreateLog("---- Order completed.-----", hubConnection.ConnectionId));
 
         //ResponseDto created
         ResponseDto response = new  (productList, orderEventList, totalProductAmount);
@@ -102,6 +120,8 @@ public class ScraperConsole
         return response;
 
     }
+
+    ScraperLogDto CreateLog(string message, string connectionId) => new ScraperLogDto(message, connectionId);
 
 }
 

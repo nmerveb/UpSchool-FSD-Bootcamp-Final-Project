@@ -1,5 +1,6 @@
 using Scraper.Infrastructure;
 using Scraper.Application;
+using Scraper.WebApi.Hubs;
 
 try
 {
@@ -12,6 +13,7 @@ try
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
+    builder.Services.AddSignalR();
 
     builder.Services.AddApplicationServices();
     builder.Services.AddInfrastructure(builder.Configuration, builder.Environment.WebRootPath);
@@ -30,6 +32,9 @@ try
     app.UseAuthorization();
 
     app.MapControllers();
+
+    app.MapHub<ScraperLogHub>("/Hubs/ScraperLogHub");
+    app.MapHub<OrderListHub>("/Hubs/OrderListHub");
 
     app.Run();
 
