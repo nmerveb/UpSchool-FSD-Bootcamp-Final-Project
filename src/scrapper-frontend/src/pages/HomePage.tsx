@@ -85,9 +85,9 @@ const dat = [
     createdOn: '2023-06-04 08:25:14.601',
   },
 ];
-function HomePage({ data }: UsersTableProps) {
+function HomePage() {
   const theme = useMantineTheme();
-  data = dat;
+  const data = dat;
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const rows = data.map((item) => (
     <tr key={item.orderId}>
