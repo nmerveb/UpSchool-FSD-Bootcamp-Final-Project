@@ -2,7 +2,6 @@ import NavBar from '../components/NavBar';
 import { useForm } from '@mantine/form';
 import {
   SimpleGrid,
-  useMantineTheme,
   TextInput,
   Group,
   Button,
@@ -12,12 +11,12 @@ import {
   Radio,
   List,
   ThemeIcon,
+  ScrollArea,
 } from '@mantine/core';
-import { IconAlarm, IconBug, IconAlarmOff } from '@tabler/icons-react';
+import { IconWorldSearch } from '@tabler/icons-react';
 import { useState } from 'react';
 
 function CreateOrder() {
-  const theme = useMantineTheme();
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const [value, setValue] = useState('');
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
@@ -80,29 +79,54 @@ function CreateOrder() {
               borderColor: '#CCCCCC',
               borderRadius: '8px',
               maxWidth: 500,
-              minHeight: 500,
               padding: 20,
             }}
           >
-            <List
-              spacing="xs"
-              size="sm"
-              center
-              icon={
-                <ThemeIcon color="teal" size={30} radius="xl">
-                  <IconBug size={20} />
-                </ThemeIcon>
-              }
-            >
-              <List.Item>Clone or download repository from GitHub</List.Item>
-              <List.Item>Install dependencies with yarn</List.Item>
-              <List.Item>
-                To start development server run npm start command
-              </List.Item>
-              <List.Item>
-                Run tests to make sure your changes do not break the build
-              </List.Item>
-            </List>
+            <ScrollArea h={500} w={500}>
+              <List
+                spacing="xs"
+                size="sm"
+                center
+                icon={
+                  <ThemeIcon color="teal" size={30} radius="xl">
+                    <IconWorldSearch size={20} />
+                  </ThemeIcon>
+                }
+              >
+                <List.Item>Clone or download repository from GitHub</List.Item>
+                <List.Item>Install dependencies with yarn</List.Item>
+                <List.Item>
+                  To start development server run npm start command
+                </List.Item>
+                <List.Item>
+                  Run tests to make sure your changes do not break the build
+                </List.Item>
+                <List.Item>Clone or download repository from GitHub</List.Item>
+                <List.Item>Install dependencies with yarn</List.Item>
+                <List.Item>
+                  To start development server run npm start command
+                </List.Item>
+                <List.Item>
+                  Run tests to make sure your changes do not break the build
+                </List.Item>
+                <List.Item>Clone or download repository from GitHub</List.Item>
+                <List.Item>Install dependencies with yarn</List.Item>
+                <List.Item>
+                  To start development server run npm start command
+                </List.Item>
+                <List.Item>
+                  Run tests to make sure your changes do not break the build
+                </List.Item>
+                <List.Item>Clone or download repository from GitHub</List.Item>
+                <List.Item>Install dependencies with yarn</List.Item>
+                <List.Item>
+                  To start development server run npm start command
+                </List.Item>
+                <List.Item>
+                  Run tests to make sure your changes do not break the build
+                </List.Item>
+              </List>
+            </ScrollArea>
           </Flex>
         </SimpleGrid>
       </Flex>

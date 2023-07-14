@@ -74,7 +74,7 @@ function NavBar() {
               <IconHome size={rem(17)} style={{ paddingRight: '2px' }} />
               Home
             </Link>
-            <Link to="/login" className={classes.link}>
+            <Link to="/settings" className={classes.link}>
               <IconSettings size={rem(17)} style={{ paddingRight: '2px' }} />
               Settings
             </Link>

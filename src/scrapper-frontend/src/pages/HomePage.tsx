@@ -1,15 +1,6 @@
-import { useState } from 'react';
 import '../App.css';
 import NavBar from '../components/NavBar';
-import {
-  Table,
-  Group,
-  Button,
-  ScrollArea,
-  useMantineTheme,
-  Flex,
-  Center,
-} from '@mantine/core';
+import { Table, Group, Button, ScrollArea, Flex } from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
 
 interface UsersTableProps {
@@ -22,11 +13,6 @@ interface UsersTableProps {
   }[];
 }
 
-const jobColors: Record<string, string> = {
-  engineer: 'blue',
-  manager: 'cyan',
-  designer: 'pink',
-};
 const dat = [
   {
     orderId: '064b3441-e8a1-4d2c-bf0a-fda1fd8060c7',
@@ -86,7 +72,6 @@ const dat = [
   },
 ];
 function HomePage() {
-  const theme = useMantineTheme();
   const data = dat;
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const rows = data.map((item) => (
