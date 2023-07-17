@@ -11,7 +11,7 @@ import {
   IconLogout,
 } from '@tabler/icons-react';
 
-import test from '/test.svg';
+import logo from '/app-logo.svg';
 
 const useStyles = createStyles((theme) => ({
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -64,7 +64,7 @@ function NavBar() {
     <Box pb={120}>
       <Header height={80} px="md">
         <Group position="apart" sx={{ height: '100%' }}>
-          <img height={70} src={test} className="logo" alt="Vite logo" />
+          <img height={70} src={logo} className="logo" alt="Crawler logo" />
           <Group
             sx={{ height: '100%' }}
             spacing={0}
