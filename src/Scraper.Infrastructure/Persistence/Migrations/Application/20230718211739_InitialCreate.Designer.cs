@@ -11,7 +11,7 @@ using Scraper.Infrastructure.Persistence.Contexts;
 namespace Scraper.Infrastructure.Persistence.Migrations.Application
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230603055415_InitialCreate")]
+    [Migration("20230718211739_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -40,8 +40,9 @@ namespace Scraper.Infrastructure.Persistence.Migrations.Application
                     b.Property<DateTimeOffset?>("ModifiedOn")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int>("RequestedAmount")
-                        .HasColumnType("int");
+                    b.Property<string>("RequestedAmount")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<int>("ScrapingType")
                         .HasColumnType("int");
@@ -49,7 +50,12 @@ namespace Scraper.Infrastructure.Persistence.Migrations.Application
                     b.Property<int>("TotalFoundAmount")
                         .HasColumnType("int");
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("char(36)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Orders", (string)null);
                 });
@@ -117,17 +123,67 @@ namespace Scraper.Infrastructure.Persistence.Migrations.Application
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(65,30)");
+                    b.Property<string>("Price")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
-                    b.Property<decimal>("SalePrice")
-                        .HasColumnType("decimal(65,30)");
+                    b.Property<string>("SalePrice")
+                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
                     b.HasIndex("OrderId");
 
                     b.ToTable("Products", (string)null);
+                });
+
+            modelBuilder.Entity("Scraper.Domain.Entities.User", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTimeOffset?>("DeletedOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<Guid>("Id")
+                        .HasColumnType("char(36)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTimeOffset?>("ModifiedOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("Users", (string)null);
+                });
+
+            modelBuilder.Entity("Scraper.Domain.Entities.Order", b =>
+                {
+                    b.HasOne("Scraper.Domain.Entities.User", "User")
+                        .WithMany("Orders")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Scraper.Domain.Entities.OrderEvent", b =>
@@ -157,6 +213,11 @@ namespace Scraper.Infrastructure.Persistence.Migrations.Application
                     b.Navigation("OrderEvents");
 
                     b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("Scraper.Domain.Entities.User", b =>
+                {
+                    b.Navigation("Orders");
                 });
 #pragma warning restore 612, 618
         }

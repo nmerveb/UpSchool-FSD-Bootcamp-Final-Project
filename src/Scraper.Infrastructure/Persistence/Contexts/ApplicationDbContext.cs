@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Scraper.Application.Common.Interfaces;
 using Scraper.Domain.Entities;
-using System.Data;
 using System.Reflection;
 
 namespace Scraper.Infrastructure.Persistence.Contexts
@@ -11,6 +10,7 @@ namespace Scraper.Infrastructure.Persistence.Contexts
         public DbSet<Order> Orders { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<OrderEvent> OrderEvents { get; set; }
+        public DbSet<User> Users { get; set; }
 
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
