@@ -36,6 +36,15 @@ namespace Scraper.Infrastructure.Persistence.Configurations.Application
                 .WithOne(p => p.Order)
                 .HasForeignKey(p => p.OrderId);
 
+            //UserId
+            builder.HasIndex(order => order.UserId);
+
+            // User ile Order arasında One-to-Many ilişkiyi tanımlayın
+            builder.HasOne(order => order.User)
+                   .WithMany(user => user.Orders)
+                   .HasForeignKey(order => order.UserId)
+                   .IsRequired();
+
             //Create table
             builder.ToTable("Orders");
 

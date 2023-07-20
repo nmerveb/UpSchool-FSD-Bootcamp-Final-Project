@@ -1,5 +1,6 @@
 ﻿using Scraper.Domain.Common;
 using Scraper.Domain.Enums;
+using Scraper.Domain.Identity;
 
 namespace Scraper.Domain.Entities
 {
