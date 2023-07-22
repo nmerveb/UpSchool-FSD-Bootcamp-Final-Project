@@ -89,7 +89,7 @@ namespace Scraper.WebApi.Controllers
 
             var query = await formContent.ReadAsStringAsync(cancellationToken);
 
-            var redirectUrl = $"http://localhost:5173/login{query}";
+            var redirectUrl = $"http://localhost:5173/login?{query}";
             
                 return Redirect(redirectUrl);
         }

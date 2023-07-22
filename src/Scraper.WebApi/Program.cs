@@ -6,10 +6,13 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Mvc;
 
 try
 {
     var builder = WebApplication.CreateBuilder(args);
+
+    builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
     // Add services to the container.
 
@@ -19,6 +22,13 @@ try
     builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 
     builder.Services.Configure<GoogleSettings>(builder.Configuration.GetSection("GoogleSettings"));
+
+
+    Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+    builder.Services.Configure<ApiBehaviorOptions>(options =>
+    {
+        options.SuppressModelStateInvalidFilter = true;
+    });
 
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
@@ -47,12 +57,11 @@ try
     });
     });
 
-    builder.Services.AddSignalR();
 
     builder.Services.AddApplicationServices();
     builder.Services.AddInfrastructure(builder.Configuration, builder.Environment.WebRootPath);
 
-    //
+
     builder.Services.AddAuthentication(options =>
     {
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -73,7 +82,26 @@ try
                ValidAudience = builder.Configuration["JwtSettings:Audience"],
                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:SecretKey"]))
            };
+
+           o.Events = new JwtBearerEvents
+           {
+               OnMessageReceived = context =>
+               {
+                   var accessToken = context.Request.Query["access_token"];
+                   // If the request is for our hub...
+                   var path = context.HttpContext.Request.Path;
+                   if (!string.IsNullOrEmpty(accessToken) &&
+                       (path.StartsWithSegments("/Hubs/AccountHub") || (path.StartsWithSegments("/Hubs/OrderHub"))))
+                   {
+                       // Read the token out of the query string
+                       context.Token = accessToken;
+                   }
+                   return Task.CompletedTask;
+               }
+           };
        });
+
+    builder.Services.AddSignalR();
 
     builder.Services.AddCors(options =>
     {
@@ -93,6 +121,8 @@ try
         app.UseSwagger();
         app.UseSwaggerUI();
     }
+
+    app.UseStaticFiles();
 
     app.UseHttpsRedirection();
 

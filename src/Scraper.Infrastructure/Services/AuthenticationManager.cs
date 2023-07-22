@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Scraper.Application.Common.Interfaces;
 using Scraper.Application.Common.Models;
-using Scraper.Application.Features.Auth.Commands.Login;
 using Scraper.Domain.Identity;
 
 namespace Scraper.Infrastructure.Services
@@ -85,6 +84,7 @@ namespace Scraper.Infrastructure.Services
             user = new User()
             {
                 UserName = socialLoginRequest.Email,
+                Email = socialLoginRequest.Email,
                 EmailConfirmed = true,
                 FirstName = socialLoginRequest.FirstName,
                 LastName = socialLoginRequest.LastName,
@@ -93,10 +93,14 @@ namespace Scraper.Infrastructure.Services
 
             var identityResult =  await _userManager.CreateAsync(user);
 
+            var getCreatedUser = await _userManager.FindByEmailAsync(socialLoginRequest.Email);
+
             if (!identityResult.Succeeded)
             {
                 throw new Exception("Login error");
             }
+
+            return _jwtService.Generate(getCreatedUser.Id, user.Email, user.FirstName, user.LastName);
 
         }
 
