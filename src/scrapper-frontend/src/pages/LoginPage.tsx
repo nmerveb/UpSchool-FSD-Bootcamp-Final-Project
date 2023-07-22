@@ -1,8 +1,11 @@
 import React from 'react';
 import { Text, Button, Paper, Flex, Space, Image } from '@mantine/core';
 import logo from '/crawler-logo.svg';
+import { useSearchParams } from 'react-router-dom';
 
 function LoginPage() {
+  const [searchParams] = useSearchParams();
+
   return (
     <>
       <Flex sx={{ minHeight: 800 }} justify="center" align="center" gap="xl">

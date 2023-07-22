@@ -7,10 +7,13 @@ namespace Scraper.Application.Features.Auth.Commands.Register
     public class AuthRegisterCommandHandler : IRequestHandler<AuthRegisterCommand, AuthRegisterDto>
     {
         private readonly IAuthenticationService _authenticationService;
+        private readonly IJwtService _jwtService;
 
-        public AuthRegisterCommandHandler(IAuthenticationService authenticationService)
+        public AuthRegisterCommandHandler(IAuthenticationService authenticationService, IJwtService jwtService)
         {
             _authenticationService = authenticationService;
+            _jwtService = jwtService;
+
         }
         public async Task<AuthRegisterDto> Handle(AuthRegisterCommand request, CancellationToken cancellationToken)
         {
@@ -22,7 +25,9 @@ namespace Scraper.Application.Features.Auth.Commands.Register
 
             var fullName = $"{request.FirstName} {request.LastName}";
 
-            return new AuthRegisterDto(request.Email, fullName, emailToken);
+            var jwtDto = _jwtService.Generate(userId, request.Email, request.FirstName, request.LastName);
+
+            return new AuthRegisterDto(request.Email, fullName, jwtDto.AccessToken);
         }
     }
 }

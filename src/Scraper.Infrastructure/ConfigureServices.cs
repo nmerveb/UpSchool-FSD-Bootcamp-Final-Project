@@ -42,6 +42,7 @@ namespace Scraper.Infrastructure
 
             //Scoped Services
             services.AddScoped<IAuthenticationService, AuthenticationManager>();
+            services.AddSingleton<IJwtService, JwtManager>();
 
 
             return services;
