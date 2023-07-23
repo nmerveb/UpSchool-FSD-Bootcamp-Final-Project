@@ -1,8 +1,6 @@
 import { createStyles, Header, Group, Box, Burger, rem } from '@mantine/core';
 import { Link } from 'react-router-dom';
-
 import { useDisclosure } from '@mantine/hooks';
-
 import {
   IconHome,
   IconSettings,
@@ -10,8 +8,10 @@ import {
   IconBellPlus,
   IconLogout,
 } from '@tabler/icons-react';
-
+import { AuthContext } from '../context/AuthContext';
 import logo from '/app-logo.svg';
+import { useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const useStyles = createStyles((theme) => ({
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -59,6 +59,13 @@ function NavBar() {
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] =
     useDisclosure(false);
   const { classes, theme } = useStyles();
+  const { setToken } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    setToken(undefined);
+
+    navigate('/login');
+  };
 
   return (
     <Box pb={120}>
@@ -81,7 +88,7 @@ function NavBar() {
           </Group>
 
           <Group className={classes.hiddenMobile}>
-            <IconBell
+            {/* <IconBell
               size={rem(30)}
               style={{
                 marginRight: '10px',
@@ -89,8 +96,9 @@ function NavBar() {
                 borderRadius: '5px',
                 backgroundColor: '#E2E2E2',
               }}
-            />
+            /> */}
             <IconLogout
+              onClick={() => handleLogout()}
               size={rem(30)}
               style={{
                 marginRight: '10px',

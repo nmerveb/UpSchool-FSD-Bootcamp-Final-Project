@@ -7,26 +7,32 @@ import {
   ScrollArea,
   Flex,
   Avatar,
+  Notification,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { IconPlus } from '@tabler/icons-react';
+import { IconPlus, IconCheck } from '@tabler/icons-react';
 import { useEffect, useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import NavBar from '../components/NavBar';
 import { AuthContext } from '../context/AuthContext';
+import { NotificationContext } from '../context/NotificationContext';
 import { getStatusText } from '../utils/statusHelper';
 import { OrdersGetAllDto, OrdersGetAllQuery } from '../types/OrderTypes';
 import { ProductsGetAllDto, ProductsGetAllQuery } from '../types/ProductTypes';
+import * as signalR from '@microsoft/signalr';
 import {
   OrderEventsGetAllDto,
   OrderEventsGetAllQuery,
 } from '../types/OrderEventTypes';
+import { exportExcel } from '../utils/exportExcel';
 
 function HomePage() {
   const [opened, { open, close }] = useDisclosure(false);
   const [modalType, setModalType] = useState('');
   const { token } = useContext(AuthContext);
+  const { isUserAllow } = useContext(NotificationContext);
+  const [notification, setNotification] = useState<string[]>([]);
   const [orders, setOrders] = useState<OrdersGetAllDto[]>([]);
   const [products, setProducts] = useState<ProductsGetAllDto[]>([]);
   const [orderEvents, setOrderEvents] = useState<OrderEventsGetAllDto[]>([]);
@@ -53,6 +59,41 @@ function HomePage() {
         setOrders(response.data);
       });
   }, [token, setOrders]);
+
+  useEffect(() => {
+    const newConnection = new signalR.HubConnectionBuilder()
+      .withUrl(
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+        `https://localhost:7287/Hubs/ScraperLogHub?access_token=${token?.accessToken}`
+      )
+      .build();
+
+    newConnection
+      .start()
+      .then(() => {
+        console.log('Hub bağlantısı başarılı.');
+      })
+      .catch((err) => console.error('Hub bağlantısı başarısız.', err));
+
+    newConnection.on('NewScraperLogAdded', (message) => {
+      console.log(notification);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      console.log(message.message);
+      setNotification((prevLog: string[]) => {
+        if (prevLog.length >= 5) {
+          prevLog.shift();
+        }
+        console.log(prevLog);
+        console.log(message);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
+        return [...prevLog, message.message];
+      });
+    });
+    return async () => {
+      newConnection.off('NewScraperLogAdded');
+      await newConnection.stop();
+    };
+  }, [token]);
 
   const handleAddOrderClick = () => {
     // Yönlendirme işlemini burada gerçekleştirin
@@ -119,6 +160,27 @@ function HomePage() {
     open();
   };
 
+  const handleExportExcelClick = (orderId: string) => {
+    const api = axios.create({
+      baseURL: 'https://localhost:7287/api',
+    });
+
+    api.interceptors.request.use((config) => {
+      if (token) {
+        config.headers['Authorization'] = `Bearer ${token.accessToken}`;
+        config.headers['Content-Type'] = 'application/json';
+      }
+      return config;
+    });
+    const productGetAll: ProductsGetAllQuery = { orderId: orderId };
+    const response = api
+      .post('/Products/GetAll', productGetAll)
+      .then((response) => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        void exportExcel(response.data);
+      });
+  };
+
   const rowsForProducts = products.map((item) => (
     <tr key={item.orderId}>
       <td>{item.orderId}</td>
@@ -169,12 +231,36 @@ function HomePage() {
           >
             Events
           </Button>
-          <Button variant="filled" color="teal.9" radius="md">
+          <Button
+            variant="filled"
+            color="teal.9"
+            radius="md"
+            onClick={() => {
+              handleExportExcelClick(item.id);
+            }}
+          >
             Excel
           </Button>
         </Group>
       </td>
     </tr>
+  ));
+
+  const toast = notification.map((item, index) => (
+    <Notification
+      key={index}
+      icon={<IconCheck size="1.2rem" />}
+      color="cyan"
+      title="Crawler"
+      onClick={() => {
+        setNotification((prevNotify) =>
+          prevNotify.filter((_, i) => i !== index)
+        );
+      }}
+      withCloseButton={false}
+    >
+      {item}
+    </Notification>
   ));
 
   return (
@@ -216,6 +302,9 @@ function HomePage() {
         ) : null}
       </Modal>
       <NavBar />
+
+      <div style={{ marginBottom: '100px' }}>{isUserAllow ? toast : null}</div>
+
       <Flex
         sx={{ maxWidth: 1700 }}
         justify="flex-end"

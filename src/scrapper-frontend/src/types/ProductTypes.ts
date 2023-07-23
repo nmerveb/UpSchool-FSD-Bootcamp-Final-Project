@@ -3,6 +3,7 @@ export type ProductsGetAllQuery = {
 };
 
 export type ProductsGetAllDto = {
+  forEach(arg0: (row: any) => void): unknown;
   orderId: string;
   name: string;
   picture: string;

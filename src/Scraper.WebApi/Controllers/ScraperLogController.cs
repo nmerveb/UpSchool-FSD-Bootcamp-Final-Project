@@ -16,12 +16,12 @@ namespace Scraper.WebApi.Controllers
             _scraperLogHubContext = scraperLogHubContext;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> SendLogNotificationAsync(ScraperLogDto logApiDto)
-        {
-            await _scraperLogHubContext.Clients.AllExcept(logApiDto.ConnectionId).SendAsync("NewScraperLogAdded", logApiDto.Message, logApiDto.CreatedOn);
+        //[HttpPost]
+        //public async Task<IActionResult> SendLogNotificationAsync(ScraperLogDto logApiDto)
+        //{
+        //    await _scraperLogHubContext.Clients.AllExcept(logApiDto.ConnectionId).SendAsync("NewScraperLogAdded", logApiDto.Message, logApiDto.CreatedOn);
 
-            return Ok();
-        }
+        //    return Ok();
+        //}
     }
 }

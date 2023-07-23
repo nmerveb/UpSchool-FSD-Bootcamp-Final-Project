@@ -91,7 +91,7 @@ try
                    // If the request is for our hub...
                    var path = context.HttpContext.Request.Path;
                    if (!string.IsNullOrEmpty(accessToken) &&
-                       (path.StartsWithSegments("/Hubs/AccountHub") || (path.StartsWithSegments("/Hubs/OrderHub"))))
+                       (path.StartsWithSegments("/Hubs/ScraperLogHub")))
                    {
                        // Read the token out of the query string
                        context.Token = accessToken;

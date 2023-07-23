@@ -1,17 +1,31 @@
 ﻿using HtmlAgilityPack;
+using Microsoft.AspNetCore.SignalR.Client;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using Scraper.Console;
-using WebDriverManager.DriverConfigs.Impl;
 using WebDriverManager;
+using WebDriverManager.DriverConfigs.Impl;
 
 namespace Scraper.Application.Utils
 {
     public class Crawler
     {
         private static string SCRAPING_PAGE = "https://4teker.net/";
+
+        private readonly HubConnection _connection;
+        public Crawler(string accessToken)
+        {
+
+            _connection = new HubConnectionBuilder()
+                .WithUrl($"https://localhost:7287/Hubs/ScraperLogHub?access_token={accessToken}")
+                .WithAutomaticReconnect()
+                .Build();
+
+        }
         public async Task<ResponseDto> ScrapProducts(Guid orderId)
         {
+            _connection.StartAsync();
+
             new DriverManager().SetUpDriver(new ChromeConfig());
             IWebDriver driver = new ChromeDriver();
 
@@ -21,6 +35,8 @@ namespace Scraper.Application.Utils
             List<OrderEventDto> orderEventList = new List<OrderEventDto>();
 
             orderEventList.Add(new OrderEventDto(orderId, OrderStatus.BotStarted, DateTimeOffset.Now));
+            await _connection.SendAsync("SendLogAsync", CreateLog("--Bot Started--"));
+
 
             driver.Navigate().GoToUrl("https://4teker.net/");
             Thread.Sleep(2000);
@@ -30,7 +46,7 @@ namespace Scraper.Application.Utils
             var totalPageCount = driver.FindElements(By.CssSelector(".page-link.page-number")).Count() + 1;
 
             orderEventList.Add(new OrderEventDto(orderId, OrderStatus.ScrapingStarted, DateTimeOffset.Now));
-
+            await _connection.SendAsync("SendLogAsync", CreateLog("--Scraping Started--"));
             try
             {
                 while (activePage < totalPageCount)
@@ -74,16 +90,18 @@ namespace Scraper.Application.Utils
                         totalProductAmount++;
                     }
 
-
+                    await _connection.SendAsync("SendLogAsync", CreateLog($"Page {activePage} scraped.Total product count:{totalProductAmount}."));
 
                     activePage++;
                 }
 
                 orderEventList.Add(new OrderEventDto(orderId, OrderStatus.ScrapingCompleted, DateTimeOffset.Now));
+                await _connection.SendAsync("SendLogAsync", CreateLog("--Scraping Completed--"));
             }
             catch
             {
                 orderEventList.Add(new OrderEventDto(orderId, OrderStatus.ScrapingFailed, DateTimeOffset.Now));
+                await _connection.SendAsync("SendLogAsync", CreateLog("--Scraping Failed--"));
             }
 
 
@@ -91,11 +109,14 @@ namespace Scraper.Application.Utils
 
             driver.Close();
             orderEventList.Add(new OrderEventDto(orderId, OrderStatus.OrderCompleted, DateTimeOffset.Now));
+            await _connection.SendAsync("SendLogAsync", CreateLog("--Order Completed--"));
 
             ResponseDto response = new(productList, orderEventList, totalProductAmount);
 
             return response;
 
         }
+
+        ScraperLogDto CreateLog(string message) => new ScraperLogDto(message);
     }
 }

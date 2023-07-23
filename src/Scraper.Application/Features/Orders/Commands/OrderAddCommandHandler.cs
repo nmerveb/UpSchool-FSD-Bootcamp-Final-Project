@@ -22,7 +22,7 @@ namespace Scraper.Application.Features.Orders.Commands
         public async Task<Response<Guid>> Handle(OrderAddCommand request, CancellationToken cancellationToken)
         {
 
-            var crawler = new Crawler();
+            var crawler = new Crawler(request.AccessToken);
 
             Guid orderId = Guid.NewGuid();
             Order addOrder =  new Order();

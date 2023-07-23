@@ -6,14 +6,11 @@
 
         public DateTime CreatedOn { get; set; }
 
-        public string ConnectionId { get; set; }
-
-        public ScraperLogDto(string message, string connectionId)
+        public ScraperLogDto(string message)
         {
             Message = message;
             CreatedOn = DateTime.Now;
-            ConnectionId = connectionId;
-
+            
         }
     }
 }

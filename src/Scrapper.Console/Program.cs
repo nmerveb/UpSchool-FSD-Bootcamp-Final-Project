@@ -121,7 +121,7 @@ public class ScraperConsole
 
     }
 
-    ScraperLogDto CreateLog(string message, string connectionId) => new ScraperLogDto(message, connectionId);
+    ScraperLogDto CreateLog(string message, string connectionId) => new ScraperLogDto(message);
 
 }
 

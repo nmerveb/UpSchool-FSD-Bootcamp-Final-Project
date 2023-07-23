@@ -14,4 +14,4 @@ export const OrderContext = createContext<OrderContextType>({
   setOrders: () => {},
 });
 
-export const useAuth = () => useContext(OrderContext);
+export const useOrder = () => useContext(OrderContext);

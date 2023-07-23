@@ -27,17 +27,7 @@ namespace Scraper.WebApi.Controllers
             _authenticationService = authenticationService;
         }
 
-        [HttpPost("Register")]
-        public async Task<IActionResult> RegisterAsync(AuthRegisterCommand command)
-        {
-            return Ok(await Mediator.Send(command));
-        }
 
-        [HttpPost("Login")]
-        public async Task<IActionResult> LoginAsync(AuthLoginCommand command)
-        {
-            return Ok(await Mediator.Send(command));
-        }
 
         [HttpGet("GoogleSignInStart")]
         public IActionResult GoogleSignInStartAsync()

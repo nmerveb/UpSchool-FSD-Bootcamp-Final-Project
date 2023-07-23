@@ -24,7 +24,7 @@ namespace Scraper.Infrastructure.Services
         {
             var user  =  createUserDto.MapToUser();
 
-            var validateUser = await CheckIfUserExist(user.Email, cancellationToken);
+            var validateUser = await CheckIfUserExist(user.Email);
 
             if (validateUser)
             {
@@ -54,7 +54,7 @@ namespace Scraper.Infrastructure.Services
         {
             var user = await _userManager.FindByEmailAsync(authLoginRequest.Email);
 
-            var validateUser = await CheckIfUserExist(authLoginRequest.Email, cancellationToken);
+            var validateUser = await CheckIfUserExist(authLoginRequest.Email);
             
             if(!validateUser)
             {
@@ -104,9 +104,9 @@ namespace Scraper.Infrastructure.Services
 
         }
 
-        private  Task<bool> CheckIfUserExist(string userEmail, CancellationToken cancellationToken)
+        public  Task<bool> CheckIfUserExist(string userEmail)
         {
-            return  _userManager.Users.AnyAsync(x => x.Email == userEmail, cancellationToken);
+            return  _userManager.Users.AnyAsync(x => x.Email == userEmail);
         }
     }
 }

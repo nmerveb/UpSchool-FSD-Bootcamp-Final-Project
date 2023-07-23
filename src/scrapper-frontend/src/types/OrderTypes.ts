@@ -9,3 +9,10 @@ export type OrdersGetAllDto = {
   scrapingType: number;
   createdOn: string;
 };
+
+export type AddOrderDto = {
+  user: string | undefined;
+  accessToken: string | undefined;
+  requestedAmount: string;
+  scrapingType: number;
+};

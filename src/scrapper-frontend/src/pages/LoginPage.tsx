@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import React, { useEffect, useContext } from 'react';
 import { Text, Button, Paper, Flex, Space, Image } from '@mantine/core';
+import { IconBrandGoogle } from '@tabler/icons-react';
 import logo from '/crawler-logo.svg';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { LocalUser } from '../types/AuthTypes';
@@ -65,16 +66,20 @@ function LoginPage() {
           </Text>
           <Space h="xl" />
           <Space h="xl" />
-          <Button
-            variant="outline"
-            color="gray"
-            radius="md"
-            fullWidth
-            mt="md"
-            onClick={onGoogleLoginClick}
-          >
-            Send message
-          </Button>
+          <Flex justify="center" sx={{ maxWidth: 500 }}>
+            <Button
+              leftIcon={<IconBrandGoogle />}
+              variant="outline"
+              color="red.8"
+              sx={{ minWidth: 350 }}
+              radius="md"
+              size="md"
+              mt="md"
+              onClick={onGoogleLoginClick}
+            >
+              Login with Google
+            </Button>
+          </Flex>
         </Paper>
       </Flex>
     </>
