@@ -26,6 +26,7 @@ import {
   OrderEventsGetAllQuery,
 } from '../types/OrderEventTypes';
 import { exportExcel } from '../utils/exportExcel';
+import { convertScrapingType } from '../utils/convertScrapingType';
 
 function HomePage() {
   const [opened, { open, close }] = useDisclosure(false);
@@ -204,7 +205,7 @@ function HomePage() {
   const rows = orders.map((item) => (
     <tr key={item.id}>
       <td>{item.id}</td>
-      <td>{item.scrapingType}</td>
+      <td>{convertScrapingType(item.scrapingType)}</td>
       <td>{item.requestedAmount}</td>
       <td>{item.totalFoundAmount}</td>
       <td>{item.createdOn}</td>
