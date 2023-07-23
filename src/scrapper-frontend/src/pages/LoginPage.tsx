@@ -34,6 +34,7 @@ function LoginPage() {
       };
 
       setToken(localUser);
+
       navigate('/');
     }
   }, []);

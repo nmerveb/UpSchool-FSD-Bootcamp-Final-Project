@@ -7,7 +7,7 @@ namespace Scraper.Domain.Entities
     public class Order : EntityBase<Guid>
     {
         public Guid Id { get; set; }
-        public Guid UserId { get; set; }
+        public string UserId { get; set; }
         public User User { get; set; }
         public string RequestedAmount { get; set; } //Istenen urun
         public int TotalFoundAmount { get; set; } //bulunan urun

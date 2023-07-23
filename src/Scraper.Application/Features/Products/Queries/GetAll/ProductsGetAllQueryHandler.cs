@@ -18,7 +18,7 @@ namespace Scraper.Application.Features.Products.Queries.GetAll
         public async Task<List<ProductsGetAllDto>> Handle(ProductsGetAllQuery request, CancellationToken cancellationToken)
         {
             var products = await _applicationDbContext.Products
-                 .Where(x => x.OrderId == request.OrderId)
+                 .Where(x => x.OrderId.ToString() == request.OrderId)
                  .ToListAsync(cancellationToken);
 
             var productDtos = MapProductToProductsDto(products);

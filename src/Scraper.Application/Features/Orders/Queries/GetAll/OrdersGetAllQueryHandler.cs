@@ -16,6 +16,7 @@ namespace Scraper.Application.Features.Orders.Queries.GetAll
         public async Task<List<OrdersGetAllDto>> Handle(OrdersGetAllQuery request, CancellationToken cancellationToken)
         {
            var orderDtos = await _applicationDbContext.Orders
+                .Where(x => x.UserId == request.User)
                 .Select(x => new OrdersGetAllDto(x.Id, x.RequestedAmount, x.TotalFoundAmount, x.ScrapingType, x.CreatedOn))
                 .ToListAsync(cancellationToken);
 

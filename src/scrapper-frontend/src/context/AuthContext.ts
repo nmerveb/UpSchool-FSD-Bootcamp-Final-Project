@@ -1,6 +1,4 @@
-// context/AuthContext.tsx
-
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useContext } from 'react';
 import { LocalUser } from '../types/AuthTypes';
 
 type AuthContextType = {

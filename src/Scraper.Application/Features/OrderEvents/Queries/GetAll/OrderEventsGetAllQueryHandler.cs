@@ -17,7 +17,7 @@ namespace Scraper.Application.Features.OrderEvents.Queries.GetAll
         public async Task<List<OrderEventsGetAllDto>> Handle(OrderEventsGetAllQuery request, CancellationToken cancellationToken)
         {
             var orderEvents = await _applicationDbContext.OrderEvents
-                 .Where(x => x.OrderId == request.OrderId)
+                 .Where(x => x.OrderId.ToString() == request.OrderId)
                  .ToListAsync(cancellationToken);
 
             var orderEventDtos = MapOrderEventToOrderEventsDto(orderEvents);
